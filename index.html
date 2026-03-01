@@ -10,10 +10,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
-  <!-- YOUR CONFIG (must load before firebase.js) -->
+  <!-- Config and Init -->
   <script src="js/firebase-config.js"></script>
-
-  <!-- Firebase Init -->
   <script src="js/firebase.js"></script>
 </head>
 <body>
@@ -31,7 +29,15 @@
 
   <div id="gameDiv" style="display:none;">
     <h2>Welcome to Your Escape Room</h2>
+
+    <!-- Start a new game -->
     <button id="startBtn">Start New Game</button>
+    <br><br>
+
+    <!-- Join existing game -->
+    <h3>Join Existing Session</h3>
+    <input type="text" id="joinSessionInput" placeholder="Enter session code">
+    <button id="joinBtn">Join Session</button>
   </div>
 
 </div>
