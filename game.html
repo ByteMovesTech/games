@@ -5,23 +5,35 @@
   <title>Escape Room</title>
   <link rel="stylesheet" href="css/style.css">
 
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- Shared Config -->
+  <script src="js/firebase-config.js"></script>
+
+  <!-- Firebase Init -->
   <script src="js/firebase.js"></script>
 </head>
 <body>
 
 <div class="container">
+
   <h2>Escape Room</h2>
 
   <div id="puzzleArea"></div>
 
+  <hr>
+
+  <h3>Team Chat</h3>
   <div id="chatBox">
-    <input type="text" id="chatInput" placeholder="Message">
+    <input type="text" id="chatInput" placeholder="Type message...">
     <button id="sendBtn">Send</button>
-    <div id="messages"></div>
   </div>
+
+  <div id="messages"></div>
+
 </div>
 
 <script src="js/game.js"></script>
