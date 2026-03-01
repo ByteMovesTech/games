@@ -5,10 +5,15 @@
   <title>Private Escape Room</title>
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Firebase -->
+  <!-- Firebase SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <!-- YOUR CONFIG (must load before firebase.js) -->
+  <script src="js/firebase-config.js"></script>
+
+  <!-- Firebase Init -->
   <script src="js/firebase.js"></script>
 </head>
 <body>
@@ -18,13 +23,15 @@
   <div id="loginDiv">
     <h2>Login</h2>
     <input type="email" id="email" placeholder="Email">
+    <br>
     <input type="password" id="password" placeholder="Password">
+    <br>
     <button id="loginBtn">Login</button>
   </div>
 
   <div id="gameDiv" style="display:none;">
-    <h2>Welcome</h2>
-    <button id="startBtn">Start Escape Room</button>
+    <h2>Welcome to Your Escape Room</h2>
+    <button id="startBtn">Start New Game</button>
   </div>
 
 </div>
