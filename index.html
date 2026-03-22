@@ -1,48 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Private Escape Room</title>
-  <link rel="stylesheet" href="css/style.css">
+  <title>Escape Room Game</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #111;
+      color: #eee;
+      text-align: center;
+    }
 
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    input, button {
+      padding: 10px;
+      margin: 5px;
+    }
 
-  <!-- Config and Init -->
-  <script src="js/firebase-config.js"></script>
-  <script src="js/firebase.js"></script>
+    #chat {
+      border: 1px solid #444;
+      height: 150px;
+      overflow-y: scroll;
+      margin: 10px auto;
+      width: 300px;
+      padding: 5px;
+      background: #000;
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
+<h1>🔐 Escape Room</h1>
 
-  <div id="loginDiv">
-    <h2>Login</h2>
-    <input type="email" id="email" placeholder="Email">
-    <br>
-    <input type="password" id="password" placeholder="Password">
-    <br>
-    <button id="loginBtn">Login</button>
-  </div>
+<button onclick="createRoom()">Create Room</button>
+<br>
+<input id="roomCode" placeholder="Enter Room Code">
+<button onclick="joinRoom()">Join Room</button>
 
-  <div id="gameDiv" style="display:none;">
-    <h2>Welcome to Your Escape Room</h2>
+<h2 id="status"></h2>
+<h3 id="puzzle"></h3>
 
-    <!-- Start new game -->
-    <button id="startBtn">Start New Game</button>
-    <br><br>
+<div id="chat"></div>
+<input id="message" placeholder="Type message">
+<button onclick="sendMessage()">Send</button>
 
-    <!-- Join existing game -->
-    <h3>Join Existing Session</h3>
-    <input type="text" id="joinSessionInput" placeholder="Enter session code">
-    <button id="joinBtn">Join Session</button>
-  </div>
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
-</div>
+<script>
+const firebaseConfig = {
+  apiKey: "PASTE_YOURS",
+  authDomain: "PASTE_YOURS",
+  databaseURL: "PASTE_YOURS",
+  projectId: "PASTE_YOURS",
+  storageBucket: "PASTE_YOURS",
+  messagingSenderId: "PASTE_YOURS",
+  appId: "PASTE_YOURS"
+};
 
-<!-- Load JS after DOM so buttons exist -->
-<script src="js/landing.js"></script>
+firebase.initializeApp(firebaseConfig);
+
+let room = "";
+
+// CREATE ROOM
+function createRoom() {
+  room = Math.random().toString(36).substring(2,6).toUpperCase();
+  document.getElementById("status").innerText = "Room Code: " + room;
+
+  const puzzle = generatePuzzle();
+
+  firebase.database().ref("rooms/" + room).set({
+    puzzle: puzzle
+  });
+
+  listenToRoom();
+}
+
+// JOIN ROOM
+function joinRoom() {
+  room = document.getElementById("roomCode").value.toUpperCase();
+  document.getElementById("status").innerText = "Joined Room: " + room;
+
+  listenToRoom();
+}
+
+// LISTEN FOR UPDATES
+function listenToRoom() {
+  const puzzleRef = firebase.database().ref("rooms/" + room + "/puzzle");
+
+  puzzleRef.on("value", snap => {
+    document.getElementById("puzzle").innerText = snap.val();
+  });
+
+  const chatRef = firebase.database().ref("rooms/" + room + "/chat");
+
+  chatRef.on("child_added", snap => {
+    const msg = snap.val();
+    document.getElementById("chat").innerHTML += "<div>" + msg + "</div>";
+  });
+}
+
+// SEND MESSAGE
+function sendMessage() {
+  const msg = document.getElementById("message").value;
+  firebase.database().ref("rooms/" + room + "/chat").push(msg);
+  document.getElementById("message").value = "";
+}
+
+// SIMPLE PUZZLES
+function generatePuzzle() {
+  const puzzles = [
+    "I speak without a mouth. What am I?",
+    "What has keys but can't open locks?",
+    "What gets wetter the more it dries?"
+  ];
+  return puzzles[Math.floor(Math.random() * puzzles.length)];
+}
+</script>
+
 </body>
 </html>
