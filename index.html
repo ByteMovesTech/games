@@ -1,121 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Escape Room Game</title>
-  <style>
-    body {
-      font-family: Arial;
-      background: #111;
-      color: #eee;
-      text-align: center;
-    }
-
-    input, button {
-      padding: 10px;
-      margin: 5px;
-    }
-
-    #chat {
-      border: 1px solid #444;
-      height: 150px;
-      overflow-y: scroll;
-      margin: 10px auto;
-      width: 300px;
-      padding: 5px;
-      background: #000;
-    }
-  </style>
+  <title>Escape Room</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <h1>🔐 Escape Room</h1>
 
-<button onclick="createRoom()">Create Room</button>
-<br>
-<input id="roomCode" placeholder="Enter Room Code">
-<button onclick="joinRoom()">Join Room</button>
+<div id="menu">
+  <button onclick="createRoom()">Create Room</button>
+  <br><br>
+  <input id="roomCode" placeholder="Enter Room Code">
+  <button onclick="joinRoom()">Join Room</button>
+</div>
 
 <h2 id="status"></h2>
 <h3 id="puzzle"></h3>
 
 <div id="chat"></div>
+
 <input id="message" placeholder="Type message">
 <button onclick="sendMessage()">Send</button>
 
-<!-- Firebase -->
+<!-- Firebase v8 (important) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
-<script>
-const firebaseConfig = {
-  apiKey: "PASTE_YOURS",
-  authDomain: "PASTE_YOURS",
-  databaseURL: "PASTE_YOURS",
-  projectId: "PASTE_YOURS",
-  storageBucket: "PASTE_YOURS",
-  messagingSenderId: "PASTE_YOURS",
-  appId: "PASTE_YOURS"
-};
-
-firebase.initializeApp(firebaseConfig);
-
-let room = "";
-
-// CREATE ROOM
-function createRoom() {
-  room = Math.random().toString(36).substring(2,6).toUpperCase();
-  document.getElementById("status").innerText = "Room Code: " + room;
-
-  const puzzle = generatePuzzle();
-
-  firebase.database().ref("rooms/" + room).set({
-    puzzle: puzzle
-  });
-
-  listenToRoom();
-}
-
-// JOIN ROOM
-function joinRoom() {
-  room = document.getElementById("roomCode").value.toUpperCase();
-  document.getElementById("status").innerText = "Joined Room: " + room;
-
-  listenToRoom();
-}
-
-// LISTEN FOR UPDATES
-function listenToRoom() {
-  const puzzleRef = firebase.database().ref("rooms/" + room + "/puzzle");
-
-  puzzleRef.on("value", snap => {
-    document.getElementById("puzzle").innerText = snap.val();
-  });
-
-  const chatRef = firebase.database().ref("rooms/" + room + "/chat");
-
-  chatRef.on("child_added", snap => {
-    const msg = snap.val();
-    document.getElementById("chat").innerHTML += "<div>" + msg + "</div>";
-  });
-}
-
-// SEND MESSAGE
-function sendMessage() {
-  const msg = document.getElementById("message").value;
-  firebase.database().ref("rooms/" + room + "/chat").push(msg);
-  document.getElementById("message").value = "";
-}
-
-// SIMPLE PUZZLES
-function generatePuzzle() {
-  const puzzles = [
-    "I speak without a mouth. What am I?",
-    "What has keys but can't open locks?",
-    "What gets wetter the more it dries?"
-  ];
-  return puzzles[Math.floor(Math.random() * puzzles.length)];
-}
-</script>
-
-</body>
-</html>
+<script src="https://www.gstatic.com
