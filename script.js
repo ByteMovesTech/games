@@ -27,9 +27,7 @@ function createRoom() {
     game: game,
     stage: 0,
     progress: "playing",
-    players: {
-      A: playerName
-    },
+    players: { A: playerName },
     chat: {}
   });
 
@@ -48,11 +46,9 @@ function joinRoom() {
   roomRef.once("value", snap => {
     const players = snap.val() || {};
 
-    if (!players.A) {
-      roomRef.update({ A: playerName });
-    } else if (!players.B) {
-      roomRef.update({ B: playerName });
-    } else {
+    if (!players.A) roomRef.update({ A: playerName });
+    else if (!players.B) roomRef.update({ B: playerName });
+    else {
       alert("Room full!");
       return;
     }
@@ -79,6 +75,8 @@ function listenToRoom() {
     if (players.B === playerName) playerRole = "B";
 
     if (data.progress === "won") {
+      document.getElementById("story").innerText =
+        "The final lock clicks open... You made it out together.";
       document.getElementById("puzzle").innerText = "🎉 YOU ESCAPED!";
       return;
     }
@@ -88,6 +86,10 @@ function listenToRoom() {
 
     if (!game) return;
 
+    // STORY TEXT
+    document.getElementById("story").innerText = game.story;
+
+    // SPLIT CLUES
     if (playerRole === "A") {
       document.getElementById("puzzle").innerText = game.clueA;
     } else if (playerRole === "B") {
@@ -99,7 +101,7 @@ function listenToRoom() {
     window.correctAnswer = game.answer;
   });
 
-  // Chat
+  // CHAT
   chatRef = firebase.database().ref("rooms/" + room + "/chat");
 
   chatRef.on("child_added", snap => {
@@ -148,23 +150,26 @@ function submitAnswer() {
   });
 }
 
-// GAME GENERATOR (MULTI-STAGE)
+// GAME GENERATOR (Story + Balanced Tone)
 function generateGame() {
   return [
     {
-      clueA: "First number is letters in 'kiss'",
-      clueB: "Second number is letters in 'you'",
-      answer: "43"
+      story: "You both wake up in a dimly lit room. A locked box sits between you.",
+      clueA: "The code starts with letters in 'trust'",
+      clueB: "The code ends with letters in 'us'",
+      answer: "52"
     },
     {
+      story: "A dusty piano sits in the corner. One key is slightly worn.",
       clueA: "I have keys but no locks...",
       clueB: "I make music but have no mouth...",
       answer: "piano"
     },
     {
-      clueA: "Final code starts with 1",
-      clueB: "Ends with 0",
+      story: "A note on the wall reads: 'Some things only work when two people figure them out together.'",
+      clueA: "The number begins with 1",
+      clueB: "It ends with 0",
       answer: "10"
     }
   ];
-    }
+}
