@@ -25,6 +25,7 @@ function createRoom() {
 
   firebase.database().ref("rooms/" + room).set({
     game: game,
+    stage: 0,
     progress: "playing",
     players: {
       A: playerName
@@ -41,11 +42,6 @@ function createRoom() {
 function joinRoom() {
   playerName = document.getElementById("playerName").value || "Player";
   room = document.getElementById("roomCode").value.toUpperCase();
-
-  if (!room) {
-    alert("Enter a room code");
-    return;
-  }
 
   const roomRef = firebase.database().ref("rooms/" + room + "/players");
 
@@ -79,7 +75,6 @@ function listenToRoom() {
 
     const players = data.players || {};
 
-    // Assign role
     if (players.A === playerName) playerRole = "A";
     if (players.B === playerName) playerRole = "B";
 
@@ -88,7 +83,10 @@ function listenToRoom() {
       return;
     }
 
-    const game = data.game;
+    const stage = data.stage;
+    const game = data.game[stage];
+
+    if (!game) return;
 
     if (playerRole === "A") {
       document.getElementById("puzzle").innerText = game.clueA;
@@ -131,32 +129,42 @@ function sendMessage() {
 function submitAnswer() {
   const input = document.getElementById("answer").value.toLowerCase();
 
-  if (input === window.correctAnswer) {
-    firebase.database().ref("rooms/" + room + "/progress").set("won");
-  } else {
-    alert("Wrong answer!");
-  }
+  const roomRef = firebase.database().ref("rooms/" + room);
+
+  roomRef.once("value", snap => {
+    const data = snap.val();
+    const stage = data.stage;
+    const game = data.game[stage];
+
+    if (input === game.answer) {
+      if (stage + 1 < data.game.length) {
+        roomRef.update({ stage: stage + 1 });
+      } else {
+        roomRef.update({ progress: "won" });
+      }
+    } else {
+      alert("Wrong answer!");
+    }
+  });
 }
 
-// GAME GENERATOR
+// GAME GENERATOR (MULTI-STAGE)
 function generateGame() {
-  const games = [
+  return [
     {
-      clueA: "The code starts with the number of letters in 'love'",
-      clueB: "The code ends with the number of letters in 'us'",
-      answer: "42"
+      clueA: "First number is letters in 'kiss'",
+      clueB: "Second number is letters in 'you'",
+      answer: "43"
     },
     {
-      clueA: "Think of something that echoes...",
-      clueB: "It speaks without a mouth...",
-      answer: "echo"
+      clueA: "I have keys but no locks...",
+      clueB: "I make music but have no mouth...",
+      answer: "piano"
     },
     {
-      clueA: "First number is days in a weekend",
-      clueB: "Second number is months in a year",
-      answer: "212"
+      clueA: "Final code starts with 1",
+      clueB: "Ends with 0",
+      answer: "10"
     }
   ];
-
-  return games[Math.floor(Math.random() * games.length)];
-             }
+    }
